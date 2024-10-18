@@ -13,7 +13,7 @@ const FileUpload = ({ onUploadComplete }) => {
     // Upload the HDR file (single request)
     const hdrFormData = new FormData();
     hdrFormData.append('file', hdrFile);
-    hdrFormData.append('fileName', hdrFile.name); // Ensure fileName is passed
+    hdrFormData.append('fileName', hdrFile.name);
 
     const hdrUploadResponse = await fetch('/api/upload-hdr', {
       method: 'POST',
@@ -39,10 +39,16 @@ const FileUpload = ({ onUploadComplete }) => {
       bsqFormData.append('totalChunks', totalChunks);
       bsqFormData.append('fileName', bsqFile.name); // Ensure fileName is passed
 
-      await fetch('/api/upload', {
+      const bsqUploadResponse = await fetch('/api/upload', {
         method: 'POST',
         body: bsqFormData,
       });
+
+      if (!bsqUploadResponse.ok) {
+        alert('BSQ chunk upload failed');
+        setUploading(false);
+        return;
+      }
 
       setUploadProgress(((currentChunk + 1) / totalChunks) * 100);
     }
